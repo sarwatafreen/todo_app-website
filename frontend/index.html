@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Task Agent System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .task-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .task-list {
+            margin-top: 20px;
+        }
+        
+        .task-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .task-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .task-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .priority-high {
+            border-left: 5px solid #dc3545;
+        }
+
+        .priority-medium {
+            border-left: 5px solid #ffc107;
+        }
+
+        .priority-low {
+            border-left: 5px solid #28a745;
+        }
+
+        .language-urdu {
+            background-color: #e6f7ff;
+            border: 1px solid #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Task Agent System</h1>
+        
+        <div class="task-form">
+            <h2>Add New Task</h2>
+            <div class="form-group">
+                <label for="taskTitle">Task Title:</label>
+                <input type="text" id="taskTitle" placeholder="Enter task title (try 'urgent' or 'kal' or 'aaj')">
+            </div>
+            <div class="form-group">
+                <label for="taskDescription">Description:</label>
+                <textarea id="taskDescription" rows="3" placeholder="Enter task description"></textarea>
+            </div>
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        
+        <div class="task-list" id="taskList">
+            <h2>Task List</h2>
+            <!-- Tasks will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Load tasks when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTasks();
+        });
+        
+        async function loadTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                const data = await response.json();
+                displayTasks(data.tasks);
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+        
+        function displayTasks(tasks) {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '<h2>Task List</h2>';
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML += '<p>No tasks found.</p>';
+                return;
+            }
+            
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item priority-${task.priority}`;
+                
+                // Determine CSS classes based on task properties
+                let cssClasses = 'task-item';
+                if (task.priority) cssClasses += ` priority-${task.priority}`;
+                if (task.language) cssClasses += ` language-${task.language}`;
+
+                taskElement.className = cssClasses;
+
+                taskElement.innerHTML = `
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-description">${task.description || ''}</div>
+                    <div class="task-meta">
+                        Due: ${task.due_date || 'Not set'} |
+                        Priority: ${task.priority || 'medium'} |
+                        Language: ${task.language || 'english'} |
+                        Status: ${task.completed ? 'Completed' : 'Pending'}
+                    </div>
+                `;
+                
+                taskList.appendChild(taskElement);
+            });
+        }
+        
+        async function addTask() {
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+
+            if (!title) {
+                alert('Please enter a task title');
+                return;
+            }
+
+            try {
+                // First, process the task through the agent API to extract additional info
+                const agentResponse = await fetch('/agent/task', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: title
+                    })
+                });
+
+                if (!agentResponse.ok) {
+                    console.error('Error processing task with agent:', agentResponse.statusText);
+                    // Continue anyway, just without agent processing
+                    await createTask(title, description);
+                    return;
+                }
+
+                const agentResult = await agentResponse.json();
+
+                // Create the task with the processed data
+                await createTask(agentResult.title, description);
+            } catch (error) {
+                console.error('Error processing task with agent:', error);
+                // Continue anyway, just without agent processing
+                await createTask(title, description);
+            }
+        }
+
+        async function createTask(title, description) {
+            try {
+                const response = await fetch('/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: description
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDescription').value = '';
+                    loadTasks(); // Reload tasks after adding
+                } else {
+                    alert('Error adding task');
+                }
+            } catch (error) {
+                console.error('Error adding task:', error);
+                alert('Error adding task');
+            }
+        }
+    </script>
+</body>
+</html>
