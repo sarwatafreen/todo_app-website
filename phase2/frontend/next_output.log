@@ -1,0 +1,12 @@
+   ▲ Next.js 16.0.0-canary.0 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://172.28.224.12:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Error: An IO error occurred while attempting to create and acquire the lockfile
+    at ignore-listed frames {
+  [cause]: [Error: Permission denied (os error 13)] { code: 'GenericFailure' }
+}
+[?25h
