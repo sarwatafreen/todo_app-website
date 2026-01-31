@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Dashboard - Tasks Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .user-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 6px;
+            border: 1px solid #bbf7d0;
+            font-weight: 500;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-layout {
+                flex-direction: row;
+            }
+        }
+
+        .tasks-section {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chat-section {
+            flex: 0 0 45%;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            color: #1e293b;
+            font-size: 1.25rem;
+        }
+
+        .section-header p {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+
+        /* Todo Form */
+        .todo-form {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        /* Error Messages */
+        .error-message {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.875rem;
+        }
+
+        /* Task List */
+        .task-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-count {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .task-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .task-item.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .task-description {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .complete-btn {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .delete-btn {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .empty-state p {
+            margin-top: 8px;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            max-height: 350px;
+        }
+
+        .message {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .assistant-message {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            resize: none;
+            height: 60px;
+        }
+
+        .tips-section {
+            background-color: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .tips-section h3 {
+            color: #1d4ed8;
+            margin-bottom: 8px;
+        }
+
+        .tips-section ul {
+            padding-left: 20px;
+        }
+
+        .tips-section li {
+            margin-bottom: 4px;
+            color: #334155;
+            font-size: 0.875rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Todo Dashboard</h1>
+            <div class="user-info">Welcome, User</div>
+        </div>
+
+        <div class="connection-status" id="connectionStatus">
+            ✅ Connected to backend server at http://localhost:8000
+        </div>
+
+        <div class="main-layout">
+            <div class="tasks-section">
+                <div class="section-header">
+                    <h2>Your Tasks</h2>
+                    <p>Manage your tasks efficiently</p>
+                </div>
+
+                <div class="todo-form">
+                    <div class="form-group">
+                        <label for="userId">User ID *</label>
+                        <input type="text" id="userId" placeholder="Enter your user ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title *</label>
+                        <input type="text" id="taskTitle" placeholder="What needs to be done?">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" placeholder="Add details (optional)" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" id="taskDueDate">
+                    </div>
+
+                    <button class="btn btn-add" id="addTaskBtn" onclick="addTask()">
+                        <span id="addTaskText">Add Task</span>
+                        <span id="addTaskSpinner" class="loading hidden"></span>
+                    </button>
+
+                    <div id="taskFormError" class="error-message hidden"></div>
+                </div>
+
+                <div class="task-list-header">
+                    <h3>Task List</h3>
+                    <span class="task-count" id="taskCount">0 tasks</span>
+                </div>
+
+                <div id="taskList">
+                    <div class="empty-state">
+                        <div>No tasks found</div>
+                        <p>Add a task to get started</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-section">
+                <div class="section-header">
+                    <h2>AI Todo Assistant</h2>
+                    <p>Chat naturally to manage your tasks</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant-message">
+                            Hello! I'm your AI assistant. Please enter your user ID above and start chatting to manage your tasks!
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
+                        <button class="btn" onclick="sendChatMessage()" id="sendChatBtn">
+                            <span id="sendChatText">Send</span>
+                            <span id="sendChatSpinner" class="loading hidden"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chatError" class="error-message hidden"></div>
+
+                <div class="tips-section">
+                    <h3>Quick Tips:</h3>
+                    <ul>
+                        <li>Add: "Create a task to buy groceries"</li>
+                        <li>Update: "Change my meeting to 3 PM"</li>
+                        <li>Complete: "Mark shopping as done"</li>
+                        <li>List: "Show me my tasks"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://172.28.224.12:8000'; // WSL IP - fallback to localhost if needed
+        let currentUserId = '';
+        let tasks = [];
+
+        // DOM Elements
+        const connectionStatus = document.getElementById('connectionStatus');
+        const userIdInput = document.getElementById('userId');
+        const taskTitleInput = document.getElementById('taskTitle');
+        const taskDescriptionInput = document.getElementById('taskDescription');
+        const taskDueDateInput = document.getElementById('taskDueDate');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const addTaskText = document.getElementById('addTaskText');
+        const addTaskSpinner = document.getElementById('addTaskSpinner');
+        const taskFormError = document.getElementById('taskFormError');
+        const taskList = document.getElementById('taskList');
+        const taskCount = document.getElementById('taskCount');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatMessageInput = document.getElementById('chatMessage');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const sendChatText = document.getElementById('sendChatText');
+        const sendChatSpinner = document.getElementById('sendChatSpinner');
+        const chatError = document.getElementById('chatError');
+
+        // Initialize the page
+        window.onload = function() {
+            checkConnection();
+
+            // Try to get user ID from localStorage if available
+            const storedUserId = localStorage.getItem('user_id');
+            if (storedUserId) {
+                userIdInput.value = storedUserId;
+                currentUserId = storedUserId;
+            }
+
+            // Load tasks if user ID is available
+            if (currentUserId) {
+                loadTasks();
+            }
+        };
+
+        // Check backend connection
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    connectionStatus.textContent = `✅ Connected to backend server. Status: ${data.status}`;
+                    connectionStatus.style.backgroundColor = '#dcfce7';
+                    connectionStatus.style.color = '#166534';
+                } else {
+                    throw new Error('Server not responding');
+                }
+            } catch (error) {
+                connectionStatus.textContent = `❌ Could not reach backend server. Error: ${error.message}`;
+                connectionStatus.style.backgroundColor = '#fee2e2';
+                connectionStatus.style.color = '#dc2626';
+            }
+        }
+
+        // Event listeners for user ID changes
+        userIdInput.addEventListener('change', function() {
+            currentUserId = this.value.trim();
+            if (currentUserId) {
+                localStorage.setItem('user_id', currentUserId);
+                loadTasks();
+            }
+        });
+
+        // Add a new task
+        async function addTask() {
+            const userId = userIdInput.value.trim();
+            const title = taskTitleInput.value.trim();
+            const description = taskDescriptionInput.value.trim();
+            const dueDate = taskDueDateInput.value;
+
+            if (!userId) {
+                showError(taskFormError, 'User ID is required');
+                return;
+            }
+
+            if (!title) {
+                showError(taskFormError, 'Task title is required');
+                return;
+            }
+
+            // Show loading state
+            addTaskBtn.disabled = true;
+            addTaskText.classList.add('hidden');
+            addTaskSpinner.classList.remove('hidden');
+
+            try {
+                const taskData = {
+                    title: title,
+                    description: description || undefined,
+                    due_date: dueDate || undefined
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}`
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const newTask = await response.json();
+
+                    // Clear form
+                    taskTitleInput.value = '';
+                    taskDescriptionInput.value = '';
+                    taskDueDateInput.value = '';
+                    hideError(taskFormError);
+
+                    // Reload tasks
+                    await loadTasks();
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    showError(taskFormError, `Failed to create task: ${errorData.detail || 'Server error'}`);
+                }
+            } catch (error) {
+                showError(taskFormError, `Network error: ${error.message}`);
+            } finally {
+                // Restore button state
+                addTaskBtn.disabled = false;
+                addTaskText.classList.remove('hidden');
+                addTaskSpinner.classList.add('hidden');
+            }
+        }
+
+        // Load tasks for user
+        async function loadTasks() {
+            const userId = userIdInput.value.trim();
+
+            if (!userId) {
+                renderEmptyState();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/tasks`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}`
+                    }
+                });
+
+                if (response.ok) {
+                    tasks = await response.json();
+                    renderTasks();
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    console.error('Failed to load tasks:', errorData);
+                    renderEmptyState();
+                }
+            } catch (error) {
+                console.error('Network error loading tasks:', error);
+                renderEmptyState();
+            }
+        }
+
+        // Render tasks to the UI
+        function renderTasks() {
+            if (tasks.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            taskCount.textContent = `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`;
+
+            const tasksHtml = tasks.map(task => `
+                <div class="task-item ${task.is_completed ? 'completed' : ''}" data-task-id="${task.id}">
+                    <div class="task-title">${escapeHtml(task.title)}</div>
+                    ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
+                    <div class="task-meta">
+                        <span>${new Date(task.created_at).toLocaleDateString()}</span>
+                        <div class="task-actions">
+                            <button class="action-btn complete-btn" onclick="toggleTaskCompletion('${task.id}', ${task.is_completed})">
+                                ${task.is_completed ? 'Undo' : 'Complete'}
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteTask('${task.id}')">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            taskList.innerHTML = tasksHtml;
+        }
+
+        // Render empty state
+        function renderEmptyState() {
+            taskCount.textContent = '0 tasks';
+            taskList.innerHTML = `
+                <div class="empty-state">
+                    <div>No tasks found</div>
+                    <p>Add a task to get started</p>
+                </div>
+            `;
+        }
+
+        // Toggle task completion
+        async function toggleTaskCompletion(taskId, currentStatus) {
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert('Please enter your user ID first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/tasks/${taskId}/complete`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}`
+                    },
+                    body: JSON.stringify({ is_completed: !currentStatus })
+                });
+
+                if (response.ok) {
+                    await loadTasks(); // Reload tasks to reflect changes
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    alert(`Failed to update task: ${errorData.detail || 'Server error'}`);
+                }
+            } catch (error) {
+                alert(`Network error: ${error.message}`);
+            }
+        }
+
+        // Delete a task
+        async function deleteTask(taskId) {
+            if (!confirm('Are you sure you want to delete this task?')) {
+                return;
+            }
+
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert('Please enter your user ID first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}`
+                    }
+                });
+
+                if (response.ok) {
+                    await loadTasks(); // Reload tasks to reflect changes
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    alert(`Failed to delete task: ${errorData.detail || 'Server error'}`);
+                }
+            } catch (error) {
+                alert(`Network error: ${error.message}`);
+            }
+        }
+
+        // Send chat message
+        async function sendChatMessage() {
+            const userId = userIdInput.value.trim();
+            const message = chatMessageInput.value.trim();
+
+            if (!userId) {
+                showError(chatError, 'Please enter your user ID first');
+                return;
+            }
+
+            if (!message) {
+                showError(chatError, 'Please enter a message');
+                return;
+            }
+
+            // Add user message to chat
+            addChatMessage(message, 'user');
+
+            // Clear input and show loading
+            chatMessageInput.value = '';
+            sendChatBtn.disabled = true;
+            sendChatText.classList.add('hidden');
+            sendChatSpinner.classList.remove('hidden');
+
+            try {
+                const chatData = {
+                    message: message,
+                    conversation_id: localStorage.getItem(`chat_conversation_id_${userId}`)
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}`
+                    },
+                    body: JSON.stringify(chatData)
+                });
+
+                if (response.ok) {
+                    const chatResponse = await response.json();
+
+                    // Store conversation ID
+                    if (chatResponse.conversation_id) {
+                        localStorage.setItem(`chat_conversation_id_${userId}`, chatResponse.conversation_id);
+                    }
+
+                    // Add AI response to chat
+                    addChatMessage(chatResponse.response, 'assistant');
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    addChatMessage(`Error: ${errorData.detail || 'Failed to get response'}`, 'assistant');
+                }
+            } catch (error) {
+                addChatMessage(`Network Error: ${error.message}`, 'assistant');
+            } finally {
+                // Restore button state
+                sendChatBtn.disabled = false;
+                sendChatText.classList.remove('hidden');
+                sendChatSpinner.classList.add('hidden');
+            }
+        }
+
+        // Add message to chat
+        function addChatMessage(content, role) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.textContent = content;
+            chatMessages.appendChild(messageDiv);
+
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show error message
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        // Hide error message
+        function hideError(element) {
+            element.classList.add('hidden');
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Handle Enter key in chat
+        chatMessageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // Handle Enter key in task title
+        taskTitleInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTask();
+            }
+        });
+    </script>
+</body>
+</html>

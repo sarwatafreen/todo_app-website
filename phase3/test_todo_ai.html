@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo & AI Assistant Test Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .connection-status {
+            padding: 15px;
+            margin: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .messages-container {
+            height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+        }
+
+        .assistant-message {
+            background-color: #e9ecef;
+            color: #333;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .info-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3fe;
+            border-radius: 8px;
+            border: 1px solid #b3d9ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Todo & AI Assistant Test Interface</h1>
+            <p>Test both todo functionality and AI assistant responses</p>
+        </div>
+
+        <div class="connection-status connected" id="connectionStatus">
+            🟢 Connected to backend server at http://localhost:8000
+        </div>
+
+        <div class="main-content">
+            <!-- Todo Panel -->
+            <div class="panel">
+                <h2>📝 Todo Operations</h2>
+
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="text" id="userId" placeholder="Enter your user ID (get from login)" value="">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskTitle">Task Title *:</label>
+                    <input type="text" id="taskTitle" placeholder="What needs to be done?">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description:</label>
+                    <textarea id="taskDescription" placeholder="Add details (optional)" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDueDate">Due Date:</label>
+                    <input type="date" id="taskDueDate">
+                </div>
+
+                <button class="btn" id="addTaskBtn" onclick="addTask()">Add Task</button>
+
+                <div class="messages-container" id="todoMessages">
+                    <div class="message success-message">Ready to add tasks. Make sure you're logged in and have a valid user ID.</div>
+                </div>
+            </div>
+
+            <!-- AI Assistant Panel -->
+            <div class="panel">
+                <h2>🤖 AI Assistant</h2>
+
+                <div class="form-group">
+                    <label for="chatUserId">User ID:</label>
+                    <input type="text" id="chatUserId" placeholder="Enter your user ID (same as above)" value="">
+                </div>
+
+                <div class="form-group">
+                    <label for="chatMessage">Your Message:</label>
+                    <textarea id="chatMessage" placeholder="Type your message to the AI assistant..." rows="3"></textarea>
+                </div>
+
+                <button class="btn" id="sendChatBtn" onclick="sendChatMessage()">Send Message</button>
+
+                <div class="messages-container" id="chatMessages">
+                    <div class="message assistant-message">Hello! I'm your AI assistant. Please enter your user ID and ask me anything!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>💡 Usage Instructions:</h3>
+            <ul style="padding-left: 20px; margin-top: 10px;">
+                <li><strong>Step 1:</strong> Log in to the main application to get your user ID</li>
+                <li><strong>Step 2:</strong> Copy your user ID into the User ID fields above</li>
+                <li><strong>Step 3:</strong> Use the Todo panel to test task operations</li>
+                <li><strong>Step 4:</strong> Use the AI Assistant panel to test chat functionality</li>
+                <li><strong>Note:</strong> Both panels require a valid authentication token from logging in</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        // Try WSL IP address first (common in WSL environments), fallback to localhost
+        let API_BASE_URL = 'http://172.28.224.12:8000'; // WSL IP - will be replaced dynamically
+
+        // Try to detect if we're in WSL and get the actual IP
+        window.onload = function() {
+            testBackendConnection();
+
+            // Try to get WSL IP dynamically
+            // Since we can't run hostname -I from browser JS, we'll provide the IP
+            // that should be used based on the environment
+            const wslIp = '172.28.224.12'; // This would typically be determined dynamically
+
+            // Test the WSL IP first, fall back to localhost if needed
+            testConnectionWithUrl(`http://${wslIp}:8000`).then(isAccessible => {
+                if (isAccessible) {
+                    API_BASE_URL = `http://${wslIp}:8000`;
+                    console.log('Using WSL IP address:', API_BASE_URL);
+                } else {
+                    API_BASE_URL = 'http://localhost:8000';
+                    console.log('Falling back to localhost:', API_BASE_URL);
+                }
+            }).catch(() => {
+                API_BASE_URL = 'http://localhost:8000';
+                console.log('Error detecting IP, falling back to localhost:', API_BASE_URL);
+            });
+
+            // Try to get user ID from localStorage if available
+            const storedUserId = localStorage.getItem('user_id');
+            if (storedUserId) {
+                document.getElementById('userId').value = storedUserId;
+                document.getElementById('chatUserId').value = storedUserId;
+            }
+        };
+
+        // Test if a specific URL is accessible
+        async function testConnectionWithUrl(url) {
+            try {
+                const response = await fetch(`${url}/health`, { method: 'GET', mode: 'cors' });
+                return response.ok;
+            } catch (error) {
+                console.warn(`URL ${url} not accessible:`, error.message);
+                return false;
+            }
+        };
+
+        // DOM Elements
+        const connectionStatus = document.getElementById('connectionStatus');
+        const todoMessages = document.getElementById('todoMessages');
+        const chatMessages = document.getElementById('chatMessages');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+
+        // Test backend connection on load
+        window.onload = function() {
+            testBackendConnection();
+
+            // Try to get user ID from localStorage if available
+            const storedUserId = localStorage.getItem('user_id');
+            if (storedUserId) {
+                document.getElementById('userId').value = storedUserId;
+                document.getElementById('chatUserId').value = storedUserId;
+            }
+        };
+
+        // Test if backend is reachable
+        async function testBackendConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, { method: 'GET', mode: 'cors' });
+                if (response.ok) {
+                    const data = await response.json();
+                    connectionStatus.innerHTML = `🟢 Connected to backend server. Status: ${data.status} (using ${API_BASE_URL})`;
+                    connectionStatus.className = 'connection-status connected';
+                } else {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+            } catch (error) {
+                connectionStatus.innerHTML = `🔴 Cannot reach backend server at ${API_BASE_URL}. Error: ${error.message}`;
+                connectionStatus.className = 'connection-status disconnected';
+            }
+        }
+
+        // Add a message to the todo messages container
+        function addTodoMessage(text, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.textContent = text;
+            todoMessages.appendChild(messageDiv);
+            todoMessages.scrollTop = todoMessages.scrollHeight;
+        }
+
+        // Add a message to the chat messages container
+        function addChatMessage(text, role = 'assistant') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Get auth headers from localStorage
+        function getAuthHeaders() {
+            const token = localStorage.getItem('todo_app_token');
+            return {
+                'Authorization': token ? `Bearer ${token}` : '',
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Validate auth token exists
+        function validateAuth() {
+            const token = localStorage.getItem('todo_app_token');
+            if (!token || token === '') {
+                return {
+                    valid: false,
+                    message: 'Authentication required. Please log in to the main application first.'
+                };
+            }
+            return { valid: true };
+        }
+
+        // Add a new task
+        async function addTask() {
+            const userId = document.getElementById('userId').value.trim();
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const dueDate = document.getElementById('taskDueDate').value;
+
+            if (!userId) {
+                addTodoMessage('Error: User ID is required', 'error');
+                return;
+            }
+
+            if (!title) {
+                addTodoMessage('Error: Task title is required', 'error');
+                return;
+            }
+
+            const authValidation = validateAuth();
+            if (!authValidation.valid) {
+                addTodoMessage(authValidation.message, 'error');
+                return;
+            }
+
+            addTaskBtn.disabled = true;
+            addTaskBtn.innerHTML = '<span class="loading"></span> Adding...';
+
+            try {
+                const taskData = {
+                    title: title,
+                    description: description || undefined,
+                    due_date: dueDate || undefined
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/tasks`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const task = await response.json();
+                    addTodoMessage(`✓ Task created successfully: ${task.title}`, 'success');
+
+                    // Clear form
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDescription').value = '';
+                    document.getElementById('taskDueDate').value = '';
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    addTodoMessage(`✗ Failed to create task: ${errorData.detail || 'Server error'}`, 'error');
+                }
+            } catch (error) {
+                addTodoMessage(`✗ Network error: ${error.message}`, 'error');
+            } finally {
+                addTaskBtn.disabled = false;
+                addTaskBtn.textContent = 'Add Task';
+            }
+        }
+
+        // Send a chat message
+        async function sendChatMessage() {
+            const userId = document.getElementById('chatUserId').value.trim();
+            const message = document.getElementById('chatMessage').value.trim();
+
+            if (!userId) {
+                addChatMessage('Error: User ID is required', 'error');
+                return;
+            }
+
+            if (!message) {
+                addChatMessage('Error: Message cannot be empty', 'error');
+                return;
+            }
+
+            const authValidation = validateAuth();
+            if (!authValidation.valid) {
+                addChatMessage(authValidation.message, 'error');
+                return;
+            }
+
+            // Add user message to chat
+            addChatMessage(`You: ${message}`, 'user');
+            document.getElementById('chatMessage').value = '';
+
+            sendChatBtn.disabled = true;
+            sendChatBtn.innerHTML = '<span class="loading"></span> Thinking...';
+
+            try {
+                const chatData = {
+                    message: message,
+                    conversation_id: null  // Will create new conversation
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/${userId}/chat`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(chatData)
+                });
+
+                if (response.ok) {
+                    const chatResponse = await response.json();
+                    addChatMessage(`AI: ${chatResponse.response}`, 'assistant');
+
+                    // Store conversation ID in localStorage if needed
+                    if (chatResponse.conversation_id) {
+                        localStorage.setItem(`chat_conversation_id_${userId}`, chatResponse.conversation_id);
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    addChatMessage(`✗ AI Error: ${errorData.detail || 'Failed to get response'}`, 'error');
+                }
+            } catch (error) {
+                addChatMessage(`✗ Network Error: ${error.message}`, 'error');
+            } finally {
+                sendChatBtn.disabled = false;
+                sendChatBtn.textContent = 'Send Message';
+            }
+        }
+
+        // Allow Enter key to submit forms (without submitting the page)
+        document.getElementById('taskTitle').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addTask();
+            }
+        });
+
+        document.getElementById('chatMessage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    </script>
+</body>
+</html>

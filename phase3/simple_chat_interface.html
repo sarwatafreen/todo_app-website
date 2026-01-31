@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Chat Assistant - Connected to Backend</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    #chat-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    #messages {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+      border-radius: 4px;
+    }
+    #messages div {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .user-message {
+      background-color: #e3f2fd;
+      text-align: right;
+    }
+    .ai-message {
+      background-color: #f1f8e9;
+    }
+    .error-message {
+      background-color: #ffebee;
+    }
+    input {
+      width: 75%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      width: 23%;
+      padding: 10px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    button:disabled {
+      background: #bbdefb;
+      cursor: not-allowed;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .status {
+      text-align: center;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .status.connected {
+      background-color: #e8f5e8;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+    .status.disconnected {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+    .input-container {
+      display: flex;
+      gap: 10px;
+    }
+    .typing-indicator {
+      color: #666;
+      font-style: italic;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat-container">
+  <div class="header">
+    <h1>🤖 AI Todo Assistant</h1>
+    <p>Connected to Backend API - Chat naturally to manage your tasks</p>
+  </div>
+
+  <div id="status" class="status disconnected">🔴 Disconnected from server</div>
+
+  <div id="messages">
+    <div class="ai-message">Hello! I'm your AI assistant. Please log in to the main application to get your user ID, then you can start chatting with me to manage your tasks!</div>
+  </div>
+
+  <div class="input-container">
+    <input id="userId" placeholder="Enter your User ID (get from main app after login)" />
+  </div>
+
+  <div class="input-container" style="margin-top: 10px;">
+    <input id="prompt" placeholder="Type your message here..." />
+    <button onclick="send()" id="sendButton">Send</button>
+  </div>
+</div>
+
+<script>
+  // API Configuration - using the WSL IP address that we know works
+  let API_BASE_URL = 'http://172.28.224.12:8000';
+  let currentUserId = '';
+  let currentConversationId = null;
+
+  // DOM Elements
+  const messagesDiv = document.getElementById("messages");
+  const promptInput = document.getElementById("prompt");
+  const userIdInput = document.getElementById("userId");
+  const sendButton = document.getElementById("sendButton");
+  const statusDiv = document.getElementById("status");
+
+  // Check if the backend is accessible on page load
+  window.onload = function() {
+    checkConnection();
+
+    // Try to get user ID from localStorage if available
+    const storedUserId = localStorage.getItem('user_id');
+    if (storedUserId) {
+      userIdInput.value = storedUserId;
+      currentUserId = storedUserId;
+    }
+  };
+
+  // Check if the backend server is accessible
+  async function checkConnection() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        mode: 'cors'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        statusDiv.textContent = `🟢 Connected to server. Status: ${data.status}`;
+        statusDiv.className = 'status connected';
+        return true;
+      } else {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+    } catch (error) {
+      statusDiv.textContent = `🔴 Cannot reach server at ${API_BASE_URL}. Error: ${error.message}`;
+      statusDiv.className = 'status disconnected';
+      return false;
+    }
+  }
+
+  // Function to add a message to the chat
+  function addMessage(text, sender) {
+    const messageDiv = document.createElement("div");
+    messageDiv.innerHTML = text;
+
+    if (sender === 'user') {
+      messageDiv.className = 'user-message';
+    } else if (sender === 'ai') {
+      messageDiv.className = 'ai-message';
+    } else if (sender === 'error') {
+      messageDiv.className = 'error-message';
+    }
+
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  // Function to show typing indicator
+  function showTypingIndicator() {
+    const typingDiv = document.createElement("div");
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = 'AI is thinking...';
+    messagesDiv.appendChild(typingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  // Function to hide typing indicator
+  function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+      typingIndicator.remove();
+    }
+  }
+
+  // Function to handle sending messages
+  async function send() {
+    let input = promptInput.value;
+    let userId = userIdInput.value.trim();
+
+    // Validate inputs
+    if (!userId) {
+      addMessage("Please enter your User ID first (get it from the main application after logging in)", "error");
+      return;
+    }
+
+    if (!input.trim()) {
+      addMessage("Please enter a message", "error");
+      return;
+    }
+
+    // Store user ID for future use
+    localStorage.setItem('user_id', userId);
+    currentUserId = userId;
+
+    // Add user message to chat
+    addMessage(`<b>You:</b> ${input}`, 'user');
+    promptInput.value = "";
+
+    // Show typing indicator
+    showTypingIndicator();
+
+    // Disable send button while processing
+    sendButton.disabled = true;
+    sendButton.textContent = "Sending...";
+
+    try {
+      // Send message to backend
+      const response = await fetch(`${API_BASE_URL}/api/${userId}/chat/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('todo_app_token') || ''}` // Use stored token if available
+        },
+        body: JSON.stringify({
+          message: input,
+          conversation_id: currentConversationId
+        })
+      });
+
+      // Hide typing indicator
+      hideTypingIndicator();
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Update conversation ID for continuity
+        if (data.conversation_id) {
+          currentConversationId = data.conversation_id;
+        }
+
+        // Add AI response to chat
+        addMessage(`<b>AI Assistant:</b> ${data.response}`, 'ai');
+      } else {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown server error' }));
+        addMessage(`<b>Error:</b> ${errorData.detail || 'Server error occurred'}`, 'error');
+      }
+    } catch (error) {
+      // Hide typing indicator
+      hideTypingIndicator();
+      addMessage(`<b>Network Error:</b> ${error.message}. Make sure the backend server is running.`, 'error');
+    } finally {
+      // Re-enable send button
+      sendButton.disabled = false;
+      sendButton.textContent = "Send";
+    }
+  }
+
+  // Allow sending with Enter key
+  promptInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      send();
+    }
+  });
+
+  userIdInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      send();
+    }
+  });
+
+  // Example messages to guide the user
+  setTimeout(() => {
+    addMessage("<b>Tip:</b> Try messages like 'Add a task to buy groceries', 'Show my tasks', 'Mark shopping as complete', or 'Update my meeting to 3 PM'", 'ai');
+  }, 2000);
+</script>
+
+</body>
+</html>
