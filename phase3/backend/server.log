@@ -1,0 +1,109 @@
+INFO:     Will watch for changes in these directories: ['/mnt/c/Users/NLN/Desktop/phase3/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [4942] using WatchFiles
+INFO:     Started server process [4952]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Starting up the application...
+INFO:     127.0.0.1:46788 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34108 - "POST /api/test-user-id/chat/ HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jws.py", line 269, in _load
+    signing_input, crypto_segment = jwt.rsplit(b".", 1)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/NLN/Desktop/phase3/backend/src/auth/jwt_handler.py", line 28, in decode_and_validate_jwt
+    payload = jwt.decode(
+              ^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jwt.py", line 222, in decode
+    decoded = self.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jwt.py", line 156, in decode_complete
+    decoded = api_jws.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jws.py", line 209, in decode_complete
+    payload, signing_input, header, signature = self._load(jwt)
+                                                ^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jws.py", line 272, in _load
+    raise DecodeError("Not enough segments") from err
+jwt.exceptions.DecodeError: Not enough segments
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 426, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1106, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/NLN/Desktop/phase3/backend/src/middleware/auth_middleware.py", line 52, in dispatch
+    payload = decode_and_validate_jwt(token)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/NLN/Desktop/phase3/backend/src/auth/jwt_handler.py", line 52, in decode_and_validate_jwt
+    raise HTTPException(
+fastapi.exceptions.HTTPException
+INFO:     172.28.224.1:50305 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50305 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58864 - "OPTIONS /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58864 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50325 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50325 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50326 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50326 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58876 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50328 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50328 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50329 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50329 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43122 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43136 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48850 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48854 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50353 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50353 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50354 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50354 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50354 - "OPTIONS /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50353 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50354 - "OPTIONS /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50353 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45134 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45138 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50364 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50364 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50365 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50365 - "GET /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/tasks/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50366 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50366 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50367 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50367 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50368 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50368 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50369 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50369 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50372 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50372 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     172.28.224.1:50373 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat HTTP/1.1" 307 Temporary Redirect
+INFO:     172.28.224.1:50373 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34342 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34344 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34120 - "POST /api/f4ad3ce5-71d8-442b-8800-56a17b49aee4/chat/ HTTP/1.1" 200 OK
