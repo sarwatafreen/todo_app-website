@@ -1,0 +1,91 @@
+INFO:     Will watch for changes in these directories: ['/mnt/c/Users/NLN/Desktop/phase4/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [9395] using WatchFiles
+INFO:     Started server process [9403]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Starting up the application...
+2026-02-06 16:22:08,375 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:22:08,381 INFO sqlalchemy.engine.Engine INSERT INTO conversation (title, user_id, id) VALUES (?, ?, ?) RETURNING created_at, updated_at
+2026-02-06 16:22:08,381 INFO sqlalchemy.engine.Engine [generated in 0.00050s] (None, 'de869f5c-d80a-4608-9f24-867935a7031f', '4a516df5-a996-409d-8c80-9fb76d5a606f')
+2026-02-06 16:22:08,446 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:22:08,487 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:22:08,493 INFO sqlalchemy.engine.Engine SELECT conversation.title, conversation.user_id, conversation.id, conversation.created_at, conversation.updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:22:08,493 INFO sqlalchemy.engine.Engine [generated in 0.00048s] ('4a516df5-a996-409d-8c80-9fb76d5a606f',)
+2026-02-06 16:22:08,509 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.conversation_id = ? AND message.user_id = ? ORDER BY message.order_index, message.timestamp
+2026-02-06 16:22:08,509 INFO sqlalchemy.engine.Engine [generated in 0.00051s] ('4a516df5-a996-409d-8c80-9fb76d5a606f', 'de869f5c-d80a-4608-9f24-867935a7031f')
+2026-02-06 16:22:08,518 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:22:08,518 INFO sqlalchemy.engine.Engine [generated in 0.00063s] ('4a516df5-a996-409d-8c80-9fb76d5a606f', 'de869f5c-d80a-4608-9f24-867935a7031f', 'user', 'hello', 0, '6e20045d-e161-4b5b-9250-1ce04982ce6e')
+2026-02-06 16:22:08,546 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:22:08,572 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:22:08,579 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:22:08,579 INFO sqlalchemy.engine.Engine [generated in 0.00043s] ('6e20045d-e161-4b5b-9250-1ce04982ce6e',)
+DEBUG: Calling agent service with 1 messages
+DEBUG: Agent service returned: <coroutine object process_chat_message at 0x7b0f30cf1210>
+DEBUG: Attempting to save AI response to DB
+2026-02-06 16:22:08,599 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:22:08,599 INFO sqlalchemy.engine.Engine [generated in 0.00048s] ('4a516df5-a996-409d-8c80-9fb76d5a606f',)
+DEBUG: Chat endpoint error: 1 validation error for MessageCreate
+content
+  Input should be a valid string [type=string_type, input_value=<coroutine object process...ssage at 0x7b0f30cf1210>, input_type=coroutine]
+    For further information visit https://errors.pydantic.dev/2.5/v/string_type
+DEBUG: Error type: ValidationError
+DEBUG: Traceback: Traceback (most recent call last):
+  File "/mnt/c/Users/NLN/Desktop/phase4/backend/src/api/chat_endpoints.py", line 119, in chat
+    ai_message = save_message_to_conversation(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/NLN/Desktop/phase4/backend/src/services/conversation_service.py", line 97, in save_message_to_conversation
+    message_data = MessageCreate(
+                   ^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/sqlmodel/main.py", line 715, in __init__
+    sqlmodel_init(self=__pydantic_self__, data=data)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/sqlmodel/_compat.py", line 341, in sqlmodel_init
+    self.__pydantic_validator__.validate_python(
+pydantic_core._pydantic_core.ValidationError: 1 validation error for MessageCreate
+content
+  Input should be a valid string [type=string_type, input_value=<coroutine object process...ssage at 0x7b0f30cf1210>, input_type=coroutine]
+    For further information visit https://errors.pydantic.dev/2.5/v/string_type
+
+DEBUG: Saving error response to DB
+2026-02-06 16:22:08,649 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:22:08,649 INFO sqlalchemy.engine.Engine [cached since 0.1316s ago] ('4a516df5-a996-409d-8c80-9fb76d5a606f', 'de869f5c-d80a-4608-9f24-867935a7031f', 'assistant', "I'm sorry, I encountered an issue processing your request. Please try again.", 1, '1a8f9f4e-2ad8-4627-b60a-c73cda7f5873')
+2026-02-06 16:22:08,662 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:22:08,685 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:22:08,686 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:22:08,687 INFO sqlalchemy.engine.Engine [cached since 0.1081s ago] ('1a8f9f4e-2ad8-4627-b60a-c73cda7f5873',)
+DEBUG: Error response saved
+2026-02-06 16:22:08,695 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:22:08,696 INFO sqlalchemy.engine.Engine [cached since 0.09676s ago] ('4a516df5-a996-409d-8c80-9fb76d5a606f',)
+/home/sarwatafreen/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:807: RuntimeWarning: coroutine 'process_chat_message' was never awaited
+  result = context.run(func, *args)
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+INFO:     172.28.224.12:43316 - "POST /api/de869f5c-d80a-4608-9f24-867935a7031f/chat/ HTTP/1.1" 200 OK
+2026-02-06 16:22:08,715 INFO sqlalchemy.engine.Engine ROLLBACK
+WARNING:  WatchFiles detected changes in 'src/services/agent_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [9403]
+Application shutdown complete
+INFO:     Started server process [9549]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [9549]
+Starting up the application...
+Application shutdown complete
+INFO:     Stopping reloader process [9395]

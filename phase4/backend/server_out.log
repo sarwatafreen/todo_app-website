@@ -1,0 +1,191 @@
+INFO:     Started server process [8816]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Starting up the application...
+INFO:     172.28.224.12:40882 - "POST /api/de869f5c-d80a-4608-9f24-867935a7031f/chat/ HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/mnt/c/Users/NLN/Desktop/phase4/backend/src/auth/jwt_handler.py", line 28, in decode_and_validate_jwt
+    payload = jwt.decode(
+              ^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jwt.py", line 222, in decode
+    decoded = self.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jwt.py", line 156, in decode_complete
+    decoded = api_jws.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jws.py", line 220, in decode_complete
+    self._verify_signature(signing_input, header, signature, key, algorithms)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/jwt/api_jws.py", line 328, in _verify_signature
+    raise InvalidSignatureError("Signature verification failed")
+jwt.exceptions.InvalidSignatureError: Signature verification failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 426, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1106, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/sarwatafreen/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/NLN/Desktop/phase4/backend/src/middleware/auth_middleware.py", line 52, in dispatch
+    payload = decode_and_validate_jwt(token)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/NLN/Desktop/phase4/backend/src/auth/jwt_handler.py", line 52, in decode_and_validate_jwt
+    raise HTTPException(
+fastapi.exceptions.HTTPException
+2026-02-06 16:19:04,771 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:04,788 INFO sqlalchemy.engine.Engine SELECT users.email, users.role, users.is_active, users.is_verified, users.failed_login_attempts, users.last_failed_login, users.account_locked_until, users.id, users.hashed_password, users.created_at, users.updated_at 
+FROM users 
+WHERE users.email = ?
+2026-02-06 16:19:04,789 INFO sqlalchemy.engine.Engine [generated in 0.00036s] ('test@example.com',)
+2026-02-06 16:19:05,164 INFO sqlalchemy.engine.Engine UPDATE users SET updated_at=? WHERE users.id = ?
+2026-02-06 16:19:05,165 INFO sqlalchemy.engine.Engine [generated in 0.00040s] ('2026-02-06 16:19:05.162207', 'de869f5c-d80a-4608-9f24-867935a7031f')
+2026-02-06 16:19:05,224 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:19:05,247 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:05,250 INFO sqlalchemy.engine.Engine SELECT users.email AS users_email, users.role AS users_role, users.is_active AS users_is_active, users.is_verified AS users_is_verified, users.failed_login_attempts AS users_failed_login_attempts, users.last_failed_login AS users_last_failed_login, users.account_locked_until AS users_account_locked_until, users.id AS users_id, users.hashed_password AS users_hashed_password, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.id = ?
+2026-02-06 16:19:05,250 INFO sqlalchemy.engine.Engine [generated in 0.00029s] ('de869f5c-d80a-4608-9f24-867935a7031f',)
+INFO:     172.28.224.12:57382 - "POST /auth/login HTTP/1.1" 200 OK
+2026-02-06 16:19:05,260 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-02-06 16:19:47,146 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:47,150 INFO sqlalchemy.engine.Engine INSERT INTO conversation (title, user_id, id) VALUES (?, ?, ?) RETURNING created_at, updated_at
+2026-02-06 16:19:47,150 INFO sqlalchemy.engine.Engine [generated in 0.00039s] (None, 'de869f5c-d80a-4608-9f24-867935a7031f', '2f590010-558c-462e-aac2-6e1fc9ee585f')
+2026-02-06 16:19:47,264 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:19:47,300 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:47,303 INFO sqlalchemy.engine.Engine SELECT conversation.title, conversation.user_id, conversation.id, conversation.created_at, conversation.updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:19:47,304 INFO sqlalchemy.engine.Engine [generated in 0.00133s] ('2f590010-558c-462e-aac2-6e1fc9ee585f',)
+2026-02-06 16:19:47,316 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.conversation_id = ? AND message.user_id = ? ORDER BY message.order_index, message.timestamp
+2026-02-06 16:19:47,316 INFO sqlalchemy.engine.Engine [generated in 0.00040s] ('2f590010-558c-462e-aac2-6e1fc9ee585f', 'de869f5c-d80a-4608-9f24-867935a7031f')
+2026-02-06 16:19:47,324 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:19:47,324 INFO sqlalchemy.engine.Engine [generated in 0.00033s] ('2f590010-558c-462e-aac2-6e1fc9ee585f', 'de869f5c-d80a-4608-9f24-867935a7031f', 'user', 'hello', 0, 'b9d900bf-1011-4a20-9ca4-74c3a8d12158')
+2026-02-06 16:19:47,336 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:19:47,359 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:47,362 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:19:47,363 INFO sqlalchemy.engine.Engine [generated in 0.00045s] ('b9d900bf-1011-4a20-9ca4-74c3a8d12158',)
+2026-02-06 16:19:47,371 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:19:47,371 INFO sqlalchemy.engine.Engine [generated in 0.00041s] ('2f590010-558c-462e-aac2-6e1fc9ee585f',)
+2026-02-06 16:19:47,377 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:19:47,377 INFO sqlalchemy.engine.Engine [cached since 0.05372s ago] ('2f590010-558c-462e-aac2-6e1fc9ee585f', 'de869f5c-d80a-4608-9f24-867935a7031f', 'assistant', "I'm sorry, I encountered an issue processing your request. Please try again.", 1, '1fb31a4f-2a99-4c08-a228-0191f19c54a3')
+2026-02-06 16:19:47,387 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:19:47,416 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:19:47,417 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:19:47,417 INFO sqlalchemy.engine.Engine [cached since 0.05454s ago] ('1fb31a4f-2a99-4c08-a228-0191f19c54a3',)
+2026-02-06 16:19:47,421 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:19:47,422 INFO sqlalchemy.engine.Engine [cached since 0.0511s ago] ('2f590010-558c-462e-aac2-6e1fc9ee585f',)
+/home/sarwatafreen/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:807: RuntimeWarning: coroutine 'process_chat_message' was never awaited
+  result = context.run(func, *args)
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+INFO:     172.28.224.12:40650 - "POST /api/de869f5c-d80a-4608-9f24-867935a7031f/chat/ HTTP/1.1" 200 OK
+2026-02-06 16:19:47,463 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-02-06 16:20:13,936 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:20:13,937 INFO sqlalchemy.engine.Engine INSERT INTO conversation (title, user_id, id) VALUES (?, ?, ?) RETURNING created_at, updated_at
+2026-02-06 16:20:13,937 INFO sqlalchemy.engine.Engine [cached since 26.46s ago] (None, 'de869f5c-d80a-4608-9f24-867935a7031f', '8171b5b9-3969-4f48-8798-b4193a294625')
+2026-02-06 16:20:13,946 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:20:14,004 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:20:14,005 INFO sqlalchemy.engine.Engine SELECT conversation.title, conversation.user_id, conversation.id, conversation.created_at, conversation.updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:20:14,005 INFO sqlalchemy.engine.Engine [cached since 26.37s ago] ('8171b5b9-3969-4f48-8798-b4193a294625',)
+2026-02-06 16:20:14,010 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.conversation_id = ? AND message.user_id = ? ORDER BY message.order_index, message.timestamp
+2026-02-06 16:20:14,011 INFO sqlalchemy.engine.Engine [cached since 26.36s ago] ('8171b5b9-3969-4f48-8798-b4193a294625', 'de869f5c-d80a-4608-9f24-867935a7031f')
+2026-02-06 16:20:14,022 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:20:14,022 INFO sqlalchemy.engine.Engine [cached since 26.37s ago] ('8171b5b9-3969-4f48-8798-b4193a294625', 'de869f5c-d80a-4608-9f24-867935a7031f', 'user', 'hello', 0, '2eb8c040-4913-4b69-af2e-37fd7a9fd6c1')
+2026-02-06 16:20:14,056 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:20:14,077 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:20:14,077 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:20:14,078 INFO sqlalchemy.engine.Engine [cached since 26.38s ago] ('2eb8c040-4913-4b69-af2e-37fd7a9fd6c1',)
+2026-02-06 16:20:14,082 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:20:14,082 INFO sqlalchemy.engine.Engine [cached since 26.38s ago] ('8171b5b9-3969-4f48-8798-b4193a294625',)
+2026-02-06 16:20:14,086 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:20:14,086 INFO sqlalchemy.engine.Engine [cached since 26.43s ago] ('8171b5b9-3969-4f48-8798-b4193a294625', 'de869f5c-d80a-4608-9f24-867935a7031f', 'assistant', "I'm sorry, I encountered an issue processing your request. Please try again.", 1, '650bc6bf-898c-44f7-a747-3554d95416c1')
+2026-02-06 16:20:14,096 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:20:14,118 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:20:14,118 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:20:14,124 INFO sqlalchemy.engine.Engine [cached since 26.43s ago] ('650bc6bf-898c-44f7-a747-3554d95416c1',)
+2026-02-06 16:20:14,133 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:20:14,134 INFO sqlalchemy.engine.Engine [cached since 26.43s ago] ('8171b5b9-3969-4f48-8798-b4193a294625',)
+INFO:     172.28.224.12:55390 - "POST /api/de869f5c-d80a-4608-9f24-867935a7031f/chat/ HTTP/1.1" 200 OK
+2026-02-06 16:20:14,142 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-02-06 16:21:10,972 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:21:10,973 INFO sqlalchemy.engine.Engine INSERT INTO conversation (title, user_id, id) VALUES (?, ?, ?) RETURNING created_at, updated_at
+2026-02-06 16:21:10,973 INFO sqlalchemy.engine.Engine [cached since 82.84s ago] (None, 'de869f5c-d80a-4608-9f24-867935a7031f', '7b1d152b-fb25-498b-933d-f4870d86c452')
+2026-02-06 16:21:10,981 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:21:11,012 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:21:11,012 INFO sqlalchemy.engine.Engine SELECT conversation.title, conversation.user_id, conversation.id, conversation.created_at, conversation.updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:21:11,013 INFO sqlalchemy.engine.Engine [cached since 82.73s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452',)
+2026-02-06 16:21:11,016 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.conversation_id = ? AND message.user_id = ? ORDER BY message.order_index, message.timestamp
+2026-02-06 16:21:11,017 INFO sqlalchemy.engine.Engine [cached since 82.72s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452', 'de869f5c-d80a-4608-9f24-867935a7031f')
+2026-02-06 16:21:11,021 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:21:11,022 INFO sqlalchemy.engine.Engine [cached since 82.71s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452', 'de869f5c-d80a-4608-9f24-867935a7031f', 'user', 'hello', 0, '07a4a4e2-def3-4f17-89fd-a37c17fcf6b8')
+2026-02-06 16:21:11,032 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:21:11,060 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:21:11,061 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:21:11,061 INFO sqlalchemy.engine.Engine [cached since 82.71s ago] ('07a4a4e2-def3-4f17-89fd-a37c17fcf6b8',)
+2026-02-06 16:21:11,066 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:21:11,066 INFO sqlalchemy.engine.Engine [cached since 82.71s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452',)
+2026-02-06 16:21:11,072 INFO sqlalchemy.engine.Engine INSERT INTO message (conversation_id, user_id, role, content, order_index, id) VALUES (?, ?, ?, ?, ?, ?) RETURNING timestamp
+2026-02-06 16:21:11,072 INFO sqlalchemy.engine.Engine [cached since 82.76s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452', 'de869f5c-d80a-4608-9f24-867935a7031f', 'assistant', "I'm sorry, I encountered an issue processing your request. Please try again.", 1, 'ff950404-2275-4719-a4c0-b903efe972bf')
+2026-02-06 16:21:11,082 INFO sqlalchemy.engine.Engine COMMIT
+2026-02-06 16:21:11,109 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-02-06 16:21:11,110 INFO sqlalchemy.engine.Engine SELECT message.conversation_id, message.user_id, message.role, message.content, message.order_index, message.id, message.timestamp 
+FROM message 
+WHERE message.id = ?
+2026-02-06 16:21:11,110 INFO sqlalchemy.engine.Engine [cached since 82.76s ago] ('ff950404-2275-4719-a4c0-b903efe972bf',)
+2026-02-06 16:21:11,116 INFO sqlalchemy.engine.Engine SELECT conversation.title AS conversation_title, conversation.user_id AS conversation_user_id, conversation.id AS conversation_id, conversation.created_at AS conversation_created_at, conversation.updated_at AS conversation_updated_at 
+FROM conversation 
+WHERE conversation.id = ?
+2026-02-06 16:21:11,116 INFO sqlalchemy.engine.Engine [cached since 82.76s ago] ('7b1d152b-fb25-498b-933d-f4870d86c452',)
+INFO:     172.28.224.12:36442 - "POST /api/de869f5c-d80a-4608-9f24-867935a7031f/chat/ HTTP/1.1" 200 OK
+2026-02-06 16:21:11,125 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [8816]
+Application shutdown complete
