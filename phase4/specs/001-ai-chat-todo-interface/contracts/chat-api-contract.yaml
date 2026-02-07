@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: AI Chat Interface API
+  description: API for the AI-powered chat interface for todo management
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /api/{user_id}/chat:
+    post:
+      summary: Send a message to the AI chat assistant
+      description: |
+        Sends a natural language message to the AI assistant and returns the AI-generated response.
+        If conversation_id is provided, continues an existing conversation.
+        If no conversation_id is provided, creates a new conversation.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The ID of the authenticated user
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: The natural language message from the user
+                  example: "Add a task to buy milk"
+                conversation_id:
+                  type: string
+                  description: Optional conversation ID to continue existing conversation
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              required:
+                - message
+      responses:
+        '200':
+          description: Successful response from the AI assistant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: The AI-generated response
+                    example: "I've added the task 'buy milk' to your todo list."
+                  conversation_id:
+                    type: string
+                    description: The ID of the conversation (new or existing)
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: When the response was generated
+                    example: "2026-01-29T12:00:00Z"
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Message cannot be empty"
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Not authenticated"
+        '403':
+          description: Forbidden - user_id in path doesn't match authenticated user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Access denied: User ID mismatch"
+        '422':
+          description: Unprocessable entity - validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Validation error"
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        loc:
+                          type: array
+                          items:
+                            type: string
+                        msg:
+                          type: string
+                        type:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Internal server error"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: chat
+    description: Chat interface operations
